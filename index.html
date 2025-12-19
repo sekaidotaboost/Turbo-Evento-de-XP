@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Turbo Evento de XP | Sekai Dota Boost</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(180deg, #1e90ff, #6a00ff);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 380px;
+}
+
+.card {
+    background: #0f1224;
+    border-radius: 14px;
+    padding: 25px;
+    color: #fff;
+    box-shadow: 0 0 30px rgba(0,0,0,0.45);
+}
+
+.card + .card {
+    margin-top: 15px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 6px;
+    color: #9b6cff;
+}
+
+.subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #bbb;
+    margin-bottom: 20px;
+}
+
+label {
+    font-size: 14px;
+    margin-top: 14px;
+    display: block;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+}
+
+.result {
+    background: #15193a;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 20px;
+}
+
+.result p {
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+.total {
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: #00ffb3;
+    margin-top: 10px;
+}
+
+button.main {
+    width: 100%;
+    margin-top: 20px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    background: linear-gradient(90deg, #7a4cff, #b56cff);
+    color: #fff;
+}
+
+button.main:hover {
+    opacity: 0.9;
+}
+
+.toggle {
+    margin-top: 15px;
+    background: none;
+    border: none;
+    color: #00ffb3;
+    cursor: pointer;
+    font-size: 13px;
+    text-decoration: underline;
+}
+
+.info-box {
+    background: #15193a;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #ddd;
+    display: none;
+}
+
+.obs {
+    text-align: center;
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+    <h1>Turbo Evento de XP</h1>
+    <div class="subtitle">Up de evento via partidas Turbo</div>
+
+    <label>📅 Quantos dias de serviço?</label>
+    <input type="number" id="dias" value="1" min="1">
+
+    <label>📺 Deseja Serviço off-stream? (transmissão no sekai_oficial)</label>
+    <select id="offstream">
+        <option value="nao">Não (com live)</option>
+        <option value="sim">Sim (+ R$20 por dia)</option>
+    </select>
+
+    <div class="result">
+        <p>🎮 Partidas contratadas: <strong><span id="jogos">8</span></strong></p>
+        <p>📅 Dias de serviço: <strong><span id="diasOut">1</span></strong></p>
+        <p>💰 Valor base: R$ <span id="base">80</span></p>
+        <p>🔒 Acréscimo sem live: R$ <span id="extra">0</span></p>
+        <div class="total">Total: R$ <span id="total">80</span></div>
+    </div>
+
+    <button class="main" onclick="comprar()">Contratar pelo WhatsApp</button>
+
+    <button class="toggle" onclick="toggleInfo()">Como funciona o serviço? (Informações)</button>
+
+    <div class="info-box" id="info">
+        📘 <strong>Como funciona o serviço?</strong><br><br>
+
+        O <strong>Turbo Evento de XP</strong> é um serviço focado em upar níveis
+        do evento de pontos do Dota 2 jogando partidas no modo <strong>Turbo</strong>.<br><br>
+
+        Cada nível do evento exige <strong>1.000 pontos</strong>, ganhos jogando partidas,
+        independente do nome atual do evento.<br><br>
+
+        🎮 <strong>Pontuação no Turbo:</strong><br>
+        • Vitória: 425 pontos<br>
+        • Derrota: 175 pontos<br><br>
+
+        Mesmo em caso de derrota, <strong>os pontos contam normalmente</strong>.<br><br>
+
+        📈 <strong>Exemplo real de 1 dia:</strong><br>
+        6 vitórias + 2 derrotas = aproximadamente <strong>2.900 a 3.000 pontos</strong>.<br><br>
+
+        ⚠️ <strong>Importante:</strong><br>
+        Não garantimos vitórias. Todas as partidas são jogadas com seriedade,
+        foco e o melhor desempenho possível.
+    </div>
+
+    <div class="obs">
+        • 8 partidas Turbo por dia<br>
+        • Vitórias não garantidas<br>
+        • Todas as partidas contam pontos
+    </div>
+</div>
+
+</div>
+
+<script>
+function calcular() {
+    const dias = parseInt(document.getElementById("dias").value) || 1;
+    const off = document.getElementById("offstream").value;
+
+    const jogos = dias * 8;
+    const base = dias * 80;
+    const extra = off === "sim" ? dias * 20 : 0;
+    const total = base + extra;
+
+    document.getElementById("jogos").innerText = jogos;
+    document.getElementById("diasOut").innerText = dias;
+    document.getElementById("base").innerText = base;
+    document.getElementById("extra").innerText = extra;
+    document.getElementById("total").innerText = total;
+}
+
+document.getElementById("dias").addEventListener("input", calcular);
+document.getElementById("offstream").addEventListener("change", calcular);
+calcular();
+
+function toggleInfo() {
+    const info = document.getElementById("info");
+    info.style.display = info.style.display === "block" ? "none" : "block";
+}
+
+function comprar() {
+    const dias = parseInt(document.getElementById("dias").value) || 1;
+    const off = document.getElementById("offstream").value;
+
+    const jogos = dias * 8;
+    const total = dias * 80 + (off === "sim" ? dias * 20 : 0);
+    const transmissao = off === "sim" ? "Sem transmissão em live" : "Com transmissão em live";
+
+    const mensagem =
+        "Olá! Gostaria de contratar o seguinte serviço:%0A%0A" +
+        "🎮 Serviço: Turbo Evento de XP%0A" +
+        "📅 Dias contratados: " + dias + "%0A" +
+        "🕹️ Partidas Turbo: " + jogos + " jogos%0A" +
+        "📺 Transmissão: " + transmissao + "%0A%0A" +
+        "💰 Valor total: R$ " + total + ",00%0A" +
+        "⏳ Prazo para finalizar: " + dias + " dia(s)%0A%0A" +
+        "Fico no aguardo para confirmar o pagamento.";
+
+    window.location.href = "https://wa.me/5521991844917?text=" + mensagem;
+}
+</script>
+
+</body>
+</html>
