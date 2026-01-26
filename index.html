@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEKAI DOTA BOOST — Turbo Evento de XP</title>
+
+<style>
+:root{
+  --bg-top:#9f7dfc;
+  --bg-bottom:#443064;
+  --card:#221425bb;
+  --card-soft:#141824;
+  --primary:#8b5cf6;
+  --text:#f3f4f6;
+  --muted:#c4aeca;
+  --success:#22c55e;
+}
+*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    linear-gradient(rgba(15,17,23,.35),rgba(15,17,23,.35)),
+    url("sua-imagem-cosmica.png");
+  background-size:cover;
+  background-position:center;
+  background-attachment:fixed;
+  color:var(--text);
+}
+.wrap{max-width:1100px;margin:auto;padding:18px}
+.header{text-align:center;margin-bottom:14px}
+.sub{font-size:14px;color:#fff}
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+}
+@media(min-width:900px){
+  .grid{grid-template-columns:1.2fr .8fr}
+}
+
+.card{
+  background:var(--card);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 20px 45px rgba(162,0,255,.18);
+}
+.card h2{
+  margin:0 0 10px;
+  font-size:16px;
+  color:var(--muted);
+}
+.pill{
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(128,74,255,.25);
+  display:inline-block;
+}
+label{font-size:13px;margin-top:10px;display:block}
+input[type=number],input[type=range]{
+  width:100%;
+  padding:10px;
+  border-radius:12px;
+  border:1px solid #2a2f45;
+  background:var(--card-soft);
+  color:var(--text);
+}
+.rangeRow{display:flex;gap:10px;align-items:center}
+.result{
+  margin-top:12px;
+  padding:12px;
+  border-radius:12px;
+  background:var(--card-soft);
+  font-size:13px;
+  line-height:1.45;
+}
+.hr{height:1px;background:rgba(196,181,253,.18);margin:12px 0}
+.check{display:flex;gap:8px;margin-top:10px;font-size:13px}
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:var(--primary);
+  color:white;
+  font-size:16px;
+}
+button:disabled{opacity:.55}
+.newPrice{color:var(--success);font-weight:800}
+small.muted{color:var(--muted)}
+.footer{text-align:center;font-size:12px;color:var(--muted);margin-top:12px}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+
+<div class="header">
+  <h1>SEKAI DOTA BOOST</h1>
+  <div class="sub"><strong>Turbo Evento de XP</strong></div>
+</div>
+
+<div class="grid">
+
+<!-- CONTRATAÇÃO -->
+<div class="card">
+<h2>⚡ Contratar serviço</h2>
+
+<div class="pill">📌 Tutorial rápido</div>
+<p style="font-size:13px;line-height:1.5">
+• <strong>1 dia</strong> representa <strong>8 jogos</strong><br>
+• Cada dia custa <strong>R$ 80,00</strong><br>
+• O serviço é vendido <strong>por dia</strong>, não por vitória
+</p>
+
+<label>Dias de serviço (0 a 30)</label>
+<input type="number" id="dias" min="0" max="30" value="1">
+
+<div class="check">
+  <input type="checkbox" id="off">
+  <span>Off-stream (sem live) + R$ 20,00 por dia</span>
+</div>
+
+<div class="result" id="res"></div>
+
+<div class="check">
+  <input type="checkbox" id="terms">
+  <span>Estou ciente de que o serviço é por dia (8 jogos), não garante vitórias e exige pagamento antecipado.</span>
+</div>
+
+<button id="zap" disabled>Contratar via WhatsApp</button>
+</div>
+
+<!-- INFORMATIVO -->
+<div class="card">
+<h2>📊 Estimativa de XP — tire suas dúvidas</h2>
+
+<small class="muted">
+Esta simulação é <strong>apenas informativa</strong> e não interfere
+no valor do serviço contratado.
+</small>
+
+<label>Vitórias por dia (1 a 8)</label>
+<div class="rangeRow">
+  <input type="range" id="wins" min="1" max="8" value="6">
+  <strong id="winsTxt">6</strong>/8
+</div>
+
+<label>Dias simulados (1 a 30)</label>
+<div class="rangeRow">
+  <input type="range" id="simDays" min="1" max="30" value="1">
+  <strong id="simDaysTxt">1</strong>
+</div>
+
+<div class="hr"></div>
+
+<div class="result" id="simRes"></div>
+
+<small class="muted">
+⚠️ Vitórias não são garantidas.  
+Valores abaixo representam apenas uma estimativa de XP.
+</small>
+</div>
+
+</div>
+
+<div class="footer">
+Twitch: sekai_oficial • WhatsApp: +55 21 99184-4917<br>
+<small>Calculadora SEKAI — Turbo Evento</small>
+</div>
+
+</div>
+
+<script>
+const XP_WIN = 425;
+const XP_LOSS = 175;
+const PRICE_DAY = 80;
+const OFF_DAY = 20;
+
+const $ = id => document.getElementById(id);
+const money = n => "R$ " + n.toFixed(2).replace(".",",");
+
+function formatXP(v){
+  return v.toLocaleString("pt-BR") + " XP";
+}
+
+function update(){
+  const dias = Number($("dias").value);
+  const off = $("off").checked;
+
+  if(dias <= 0){
+    $("res").innerHTML = "Informe a quantidade de dias para calcular.";
+    $("zap").disabled = true;
+  }else{
+    const base = dias * PRICE_DAY;
+    const offVal = off ? dias * OFF_DAY : 0;
+    const total = base + offVal;
+
+    $("res").innerHTML = `
+<strong>📆 Dias contratados:</strong> ${dias}<br>
+<strong>🎮 Total de jogos:</strong> ${dias * 8}<br>
+<div class="hr"></div>
+<strong>Total:</strong> <span class="newPrice">${money(total)}</span>
+`;
+
+    $("zap").disabled = !$("terms").checked;
+
+    $("zap").onclick = () => {
+      const msg = encodeURIComponent(
+`Olá! Quero contratar o *Turbo Evento de XP*.
+
+• Dias: ${dias}
+• Jogos: ${dias * 8}
+• Off-stream: ${off ? "Sim" : "Não"}
+
+💵 TOTAL: ${money(total)}`
+      );
+      window.open("https://wa.me/5521991844917?text=" + msg);
+    };
+  }
+
+  // SIMULAÇÃO (INFORMATIVA)
+  const wins = Number($("wins").value);
+  const simDays = Number($("simDays").value);
+  const losses = 8 - wins;
+
+  $("winsTxt").textContent = wins;
+  $("simDaysTxt").textContent = simDays;
+
+  const xpWins = wins * XP_WIN * simDays;
+  const xpLoss = losses * XP_LOSS * simDays;
+  const xpTotal = xpWins + xpLoss;
+
+  $("simRes").innerHTML = `
+<strong>XP com vitórias:</strong> ${formatXP(xpWins)}<br>
+<strong>XP com derrotas:</strong> ${formatXP(xpLoss)}<br>
+<div class="hr"></div>
+<strong>Total estimado de XP:</strong>
+<span class="newPrice">${formatXP(xpTotal)}</span>
+`;
+}
+
+["dias","off","terms","wins","simDays"].forEach(id=>{
+  $(id).addEventListener("input",update);
+});
+update();
+</script>
+
+</body>
+</html>
